@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ SITE_NAME }} — {{ SITE_TAGLINE }}{% endblock %}</title>
+    <meta name="description" content="{{ SITE_TAGLINE }} — portfolio, projects, blog and resume.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        bg: "#0b0f19",
+                        surface: "#111827",
+                        accent: "#f59e0b",
+                        accent2: "#f97316",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "ui-sans-serif", "system-ui"],
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-bg text-gray-200 font-sans antialiased">
+
+<header class="sticky top-0 z-50 backdrop-blur bg-bg/80 border-b border-white/5">
+    <nav class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="{% url 'portfolio:home' %}" class="text-lg font-bold tracking-tight text-white">
+            {{ SITE_NAME|default:"Muhammad Zaib" }}<span class="text-accent">.</span>
+        </a>
+
+        <button id="nav-toggle" class="md:hidden text-gray-300" aria-label="Toggle menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <ul id="nav-links" class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+            <li><a href="{% url 'portfolio:home' %}#about" class="hover:text-accent transition">About</a></li>
+            <li><a href="{% url 'portfolio:home' %}#skills" class="hover:text-accent transition">Skills</a></li>
+            <li><a href="{% url 'portfolio:project_list' %}" class="hover:text-accent transition">Projects</a></li>
+            <li><a href="{% url 'portfolio:blog_list' %}" class="hover:text-accent transition">Blog</a></li>
+            <li><a href="{% url 'portfolio:resume' %}" class="hover:text-accent transition">Resume</a></li>
+            <li>
+                <a href="{% url 'portfolio:contact' %}"
+                   class="px-4 py-2 rounded-lg bg-accent text-bg font-semibold hover:bg-accent2 hover:text-white transition">
+                    Contact
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <ul id="nav-links-mobile" class="hidden md:hidden flex-col gap-1 px-6 pb-4 text-sm font-medium text-gray-300">
+        <li><a href="{% url 'portfolio:home' %}#about" class="block py-2 hover:text-accent">About</a></li>
+        <li><a href="{% url 'portfolio:home' %}#skills" class="block py-2 hover:text-accent">Skills</a></li>
+        <li><a href="{% url 'portfolio:project_list' %}" class="block py-2 hover:text-accent">Projects</a></li>
+        <li><a href="{% url 'portfolio:blog_list' %}" class="block py-2 hover:text-accent">Blog</a></li>
+        <li><a href="{% url 'portfolio:resume' %}" class="block py-2 hover:text-accent">Resume</a></li>
+        <li><a href="{% url 'portfolio:contact' %}" class="block py-2 text-accent">Contact</a></li>
+    </ul>
+</header>
+
+<main>
+    {% if messages %}
+        <div class="max-w-3xl mx-auto px-6 pt-6 space-y-3">
+            {% for message in messages %}
+                <div class="rounded-lg px-4 py-3 text-sm
+                    {% if message.tags == 'success' %}bg-emerald-500/10 text-emerald-300 border border-emerald-500/30
+                    {% elif message.tags == 'error' %}bg-red-500/10 text-red-300 border border-red-500/30
+                    {% else %}bg-gray-500/10 text-gray-300 border border-gray-500/30{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="border-t border-white/5 mt-24">
+    <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-sm text-gray-500">
+            &copy; {% now "Y" %} {{ SITE_NAME|default:"Muhammad Zaib" }}. Built with Django &amp; Tailwind CSS.
+        </p>
+        <div class="flex items-center gap-5 text-gray-400">
+            {% if GITHUB_URL %}
+                <a href="{{ GITHUB_URL }}" target="_blank" rel="noopener" class="hover:text-accent transition" aria-label="GitHub">GitHub</a>
+            {% endif %}
+            {% if LINKEDIN_URL %}
+                <a href="{{ LINKEDIN_URL }}" target="_blank" rel="noopener" class="hover:text-accent transition" aria-label="LinkedIn">LinkedIn</a>
+            {% endif %}
+            {% if TWITTER_URL %}
+                <a href="{{ TWITTER_URL }}" target="_blank" rel="noopener" class="hover:text-accent transition" aria-label="Twitter">Twitter</a>
+            {% endif %}
+            {% if INSTAGRAM_URL %}
+                <a href="{{ INSTAGRAM_URL }}" target="_blank" rel="noopener" class="hover:text-accent transition" aria-label="Instagram">Instagram</a>
+            {% endif %}
+            {% if EMAIL_CONTACT %}
+                <a href="mailto:{{ EMAIL_CONTACT }}" class="hover:text-accent transition">{{ EMAIL_CONTACT }}</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+
+<script>
+    const navToggle = document.getElementById("nav-toggle");
+    const navMobile = document.getElementById("nav-links-mobile");
+    navToggle?.addEventListener("click", () => {
+        navMobile.classList.toggle("hidden");
+        navMobile.classList.toggle("flex");
+    });
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Resume — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-6 py-20">
+    <div class="flex items-center justify-between flex-wrap gap-4 mb-10">
+        <div>
+            <h2 class="text-sm font-mono text-accent mb-2">Resume</h2>
+            <h3 class="text-3xl font-bold text-white">{{ SITE_NAME }}</h3>
+            <p class="text-gray-400 mt-1">{{ SITE_TAGLINE }}</p>
+        </div>
+        {% if resume %}
+            <a href="{{ resume.file.url }}" download
+               class="px-5 py-3 rounded-lg bg-accent text-bg font-semibold hover:bg-accent2 hover:text-white transition">
+                Download PDF
+            </a>
+        {% endif %}
+    </div>
+
+    {% if resume %}
+        {% if resume.summary %}
+            <div class="card rounded-xl p-6 mb-10">
+                <p class="text-gray-300 leading-relaxed whitespace-pre-line">{{ resume.summary }}</p>
+            </div>
+        {% endif %}
+        <div class="card rounded-xl overflow-hidden" style="height: 80vh;">
+            <iframe src="{{ resume.file.url }}" class="w-full h-full" title="Resume preview"></iframe>
+        </div>
+    {% else %}
+        <p class="text-gray-500 mb-10">No resume uploaded yet — add one via the Django admin (Resume model).</p>
+    {% endif %}
+
+    {% if skills %}
+    <div class="mt-14">
+        <h4 class="text-xl font-bold text-white mb-6">Skills</h4>
+        <div class="flex flex-wrap gap-2">
+            {% for skill in skills %}
+                <span class="text-sm font-mono px-3 py-1 rounded-full bg-white/5 text-accent2">{{ skill.name }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
