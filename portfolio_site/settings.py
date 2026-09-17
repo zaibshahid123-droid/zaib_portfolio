@@ -15,25 +15,18 @@ SECRET_KEY = os.environ.get(
     "SECRET_KEY", "django-insecure-CHANGE-THIS-BEFORE-DEPLOYING"
 )
 
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS", "127.0.0.1,localhost"
-).split(",")
-
-CSRF_TRUSTED_ORIGINS = [
-    h for h in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if h
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("ALLOWED_HOSTS", ".vercel.app,127.0.0.1,localhost").split(",")
+    if host.strip()
 ]
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+CSRF_TRUSTED_ORIGINS = [
+    h.strip() for h in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if h.strip()
+]
 
-ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', 'localhost']
 # -----------------------------------------------------------------------
 # Applications
 # -----------------------------------------------------------------------
@@ -91,10 +84,12 @@ DATABASES = {
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     try:
-        import dj_database_url
-
-        DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    except ImportError:
+        DATABASES["default"] = dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    except Exception:
         pass
 
 # -----------------------------------------------------------------------
@@ -121,9 +116,13 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
